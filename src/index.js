@@ -78,6 +78,25 @@ class ScrollspyNav extends Component {
     });
   }
 
+  scrollListener() {
+    let scrollSectionOffsetTop;
+    this.scrollTargetIds.map((sectionID, index) => {
+      scrollSectionOffsetTop = document.getElementById(sectionID).offsetTop - (this.headerBackground ? document.querySelector("div[data-nav='list']").scrollHeight : 0);
+
+      if (window.pageYOffset >= scrollSectionOffsetTop && window.pageYOffset < scrollSectionOffsetTop + document.getElementById(sectionID).scrollHeight) {
+        this.getNavLinkElement(sectionID).classList.add(this.activeNavClass);
+        this.clearOtherNavLinkActiveStyle(sectionID)
+      } else {
+        this.getNavLinkElement(sectionID).classList.remove(this.activeNavClass);
+      }
+
+      if (window.innerHeight + window.pageYOffset >= document.body.scrollHeight && index === this.scrollTargetIds.length - 1) {
+        this.getNavLinkElement(sectionID).classList.add(this.activeNavClass);
+        this.clearOtherNavLinkActiveStyle(sectionID);
+      }
+    });
+  }
+
   componentDidMount() {
     if (document.querySelector(`a[href='${this.homeDefaultLink}']`)) {
       document.querySelector(`a[href='${this.homeDefaultLink}']`).addEventListener("click", (event) => {
@@ -101,24 +120,11 @@ class ScrollspyNav extends Component {
       });
     })
 
-    window.addEventListener("scroll", () => {
-      let scrollSectionOffsetTop;
-      this.scrollTargetIds.map((sectionID, index) => {
-        scrollSectionOffsetTop = document.getElementById(sectionID).offsetTop - (this.headerBackground ? document.querySelector("div[data-nav='list']").scrollHeight : 0);
+    window.addEventListener("scroll", this.scrollListener);
+  }
 
-        if (window.pageYOffset >= scrollSectionOffsetTop && window.pageYOffset < scrollSectionOffsetTop + document.getElementById(sectionID).scrollHeight) {
-          this.getNavLinkElement(sectionID).classList.add(this.activeNavClass);
-          this.clearOtherNavLinkActiveStyle(sectionID)
-        } else {
-          this.getNavLinkElement(sectionID).classList.remove(this.activeNavClass);
-        }
-
-        if (window.innerHeight + window.pageYOffset >= document.body.scrollHeight && index === this.scrollTargetIds.length - 1) {
-          this.getNavLinkElement(sectionID).classList.add(this.activeNavClass);
-          this.clearOtherNavLinkActiveStyle(sectionID);
-        }
-      });
-    });
+  componentWillUnmount() {
+    window.removeEventListener("scroll", this.scrollListener);
   }
 
   render() {
