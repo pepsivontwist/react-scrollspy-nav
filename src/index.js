@@ -108,6 +108,18 @@ class ScrollspyNav extends Component {
       });
     }
 
+    if (window.NodeList && !NodeList.prototype.forEach) {
+      NodeList.prototype.forEach = Array.prototype.forEach;
+   }
+
+   if (!String.prototype.includes) {
+      String.prototype.includes = function() {
+          'use strict';
+          return String.prototype.indexOf.apply(this, arguments) !== -1;
+      };
+    }
+
+
     document.querySelector("div[data-nav='list']").querySelectorAll("a").forEach( (navLink) => {
       navLink.addEventListener("click", (event) => {
         event.preventDefault();
